@@ -1,6 +1,6 @@
 package com.vidacruz.triage.infraestructura.config;
 
-import com.vidacruz.triage.infraestructura.adaptador.out.persistencia.entidades.NivelTriage;
+import com.vidacruz.triage.dominio.NivelTriage;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
