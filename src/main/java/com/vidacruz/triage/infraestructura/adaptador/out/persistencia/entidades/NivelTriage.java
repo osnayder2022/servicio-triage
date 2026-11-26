@@ -1,4 +1,4 @@
-package com.vidacruz.triage.dominio;
+package com.vidacruz.triage.infraestructura.adaptador.out.persistencia.entidades;
 
 
 import lombok.Getter;

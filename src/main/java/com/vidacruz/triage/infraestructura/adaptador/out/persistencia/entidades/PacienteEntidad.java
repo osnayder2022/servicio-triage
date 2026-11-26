@@ -1,4 +1,4 @@
-package com.vidacruz.triage.dominio;
+package com.vidacruz.triage.infraestructura.adaptador.out.persistencia.entidades;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table("pacientes")
-public class PacienteEntity {
+public class PacienteEntidad {
 
     @Id
     private Long id;
