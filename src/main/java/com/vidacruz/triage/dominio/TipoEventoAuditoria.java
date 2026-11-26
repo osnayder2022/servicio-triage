@@ -1,4 +1,4 @@
-package com.vidacruz.triage.infraestructura.adaptador.out.persistencia.entidades;
+package com.vidacruz.triage.dominio;
 
 public enum TipoEventoAuditoria {
     REGISTRO,
