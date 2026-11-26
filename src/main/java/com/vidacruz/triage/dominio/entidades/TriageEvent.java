@@ -1,4 +1,4 @@
-package com.vidacruz.triage.dominio;
+package com.vidacruz.triage.dominio.entidades;
 
 import java.time.Instant;
 

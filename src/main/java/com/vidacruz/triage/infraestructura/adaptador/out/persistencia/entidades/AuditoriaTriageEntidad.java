@@ -1,6 +1,6 @@
 package com.vidacruz.triage.infraestructura.adaptador.out.persistencia.entidades;
 
-import com.vidacruz.triage.dominio.EstadoPaciente;
+import com.vidacruz.triage.dominio.entidades.EstadoPaciente;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
