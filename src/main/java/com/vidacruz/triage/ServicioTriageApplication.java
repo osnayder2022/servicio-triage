@@ -1,4 +1,4 @@
-package com.vidacruz.servicio_triage;
+package com.vidacruz.triage;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
