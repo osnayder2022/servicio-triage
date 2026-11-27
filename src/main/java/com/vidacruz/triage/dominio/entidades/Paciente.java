@@ -396,4 +396,12 @@ public class Paciente {
         String normalizada = quejaPrincipal.trim().toLowerCase();
         return quejasAdministrativas.contains(normalizada);
     }
+
+    public boolean esTransicionValida(EstadoPaciente nuevoEstado) {
+        return switch (this.estado) {
+            case REGISTRADO -> nuevoEstado == EstadoPaciente.EN_CONSULTA || nuevoEstado == EstadoPaciente.ALTA;
+            case EN_CONSULTA -> nuevoEstado == EstadoPaciente.ALTA;
+            case ALTA -> false;
+        };
+    }
 }
