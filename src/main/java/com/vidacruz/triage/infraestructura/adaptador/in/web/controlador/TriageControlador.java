@@ -11,10 +11,13 @@ import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
 @RequestMapping("/triage/pacientes")
 @RequiredArgsConstructor
+@Validated
 public class TriageControlador {
     private final GestionarEstadoPacienteCasoUso gestionarEstadoPacienteCasoUso;
     private final RegistrarPacienteCasoUso registrarPacienteCasoUso;
@@ -28,13 +31,13 @@ public class TriageControlador {
 
     @PatchMapping("/{id}/estado")
     public Mono<PacienteDetalleResponse> cambiarEstado(
-            @PathVariable Long id,
+            @PathVariable @Positive Long id,
             @Valid @RequestBody CambioEstadoRequest request) {
         return gestionarEstadoPacienteCasoUso.cambiarEstado(id, request.estado());
     }
 
     @GetMapping("/{id}")
-    public Mono<PacienteDetalleResponse> obtenerPaciente(@PathVariable Long id) {
+    public Mono<PacienteDetalleResponse> obtenerPaciente(@PathVariable @Positive Long id) {
         return gestionarEstadoPacienteCasoUso.obtenerPorId(id);
     }
 }
