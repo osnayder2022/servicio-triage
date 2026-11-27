@@ -8,10 +8,27 @@ import org.springframework.http.HttpStatus;
 import java.util.stream.Collectors;
 import java.time.Instant;
 import java.util.Map;
+import jakarta.validation.ConstraintViolationException;
 
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> errores = ex.getConstraintViolations().stream()
+                .collect(Collectors.toMap(
+                        violation -> violation.getPropertyPath().toString(),
+                        violation -> violation.getMessage(),
+                        (a, b) -> a
+                ));
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", Instant.now(),
+                "status", HttpStatus.BAD_REQUEST.value(),
+                "error", "Validación fallida",
+                "camposInvalidos", errores
+        ));
+    }
 
     @ExceptionHandler(WebExchangeBindException.class)
     public ResponseEntity handleValidation(WebExchangeBindException ex) {
