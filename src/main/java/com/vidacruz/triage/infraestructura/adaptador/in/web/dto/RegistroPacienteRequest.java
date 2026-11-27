@@ -2,6 +2,7 @@ package com.vidacruz.triage.infraestructura.adaptador.in.web.dto;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import jakarta.validation.constraints.AssertTrue;
 
 public record RegistroPacienteRequest(
         @NotBlank(message = "El nombre completo es obligatorio")
@@ -49,4 +50,9 @@ public record RegistroPacienteRequest(
 
         @NotBlank(message = "La queja principal es obligatoria")
         String quejaPrincipal
-) {}
+) {
+    @AssertTrue(message = "La presion diastolica no puede superar la sistolica")
+    public boolean isPresionArterialValida() {
+        return presionSistolica == null || presionDiastolica == null || presionDiastolica <= presionSistolica;
+    }
+}
