@@ -8,9 +8,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/triage_db
-      SPRING_R2DBC_USERNAME: postgres
-      SPRING_R2DBC_PASSWORD: Colombia123.2027*
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/${TRIAGE_DB_NAME}
+      SPRING_R2DBC_USERNAME: ${TRIAGE_DB_USER}
+      SPRING_R2DBC_PASSWORD: ${TRIAGE_DB_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       postgres:
@@ -23,9 +23,9 @@ services:
     container_name: triage-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: triage_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Colombia123.2027*
+      POSTGRES_DB: ${TRIAGE_DB_NAME}
+      POSTGRES_USER: ${TRIAGE_DB_USER}
+      POSTGRES_PASSWORD: ${TRIAGE_DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -44,6 +44,7 @@ services:
       - "29092:29092"
     environment:
       KAFKA_NODE_ID: 1
+      KAFKA_CLUSTER_ID: ${TRIAGE_KAFKA_CLUSTER_ID}
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
