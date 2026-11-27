@@ -1,7 +1,7 @@
 package com.vidacruz.triage.infraestructura.adaptador.out.persistencia;
 
 import com.vidacruz.triage.dominio.port.out.ReporteOperacionPort;
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.ReporteOperacionHoraResponse;
+import com.vidacruz.triage.dominio.entidades.ReporteOperacionHoraResponse;
 import com.vidacruz.triage.infraestructura.adaptador.out.persistencia.repositorios.PacienteRepositorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

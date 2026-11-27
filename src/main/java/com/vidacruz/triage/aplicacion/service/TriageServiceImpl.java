@@ -1,9 +1,8 @@
 package com.vidacruz.triage.aplicacion.service;
 
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.RegistroPacienteResponse;
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.RegistroPacienteRequest;
 import com.vidacruz.triage.aplicacion.casouso.port.in.RegistrarPacienteCasoUso;
 import com.vidacruz.triage.dominio.port.out.AuditoriaTriageRepositorioPort;
+import com.vidacruz.triage.dominio.entidades.RegistroPacienteResponse;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import com.vidacruz.triage.dominio.port.out.PacienteRepositorioPort;
 import com.vidacruz.triage.dominio.port.out.GestorMensajePort;
@@ -34,25 +33,13 @@ public class TriageServiceImpl implements RegistrarPacienteCasoUso {
     }
 
     @Override
-    public Mono<RegistroPacienteResponse> registrar(RegistroPacienteRequest request) {
+    public Mono<RegistroPacienteResponse> registrar(Paciente paciente) {
         Instant ahora = Instant.now();
 
-        Paciente paciente = Paciente.builder()
-                .nombreCompleto(request.nombreCompleto())
-                .edad(request.edad())
-                .frecuenciaCardiaca(request.frecuenciaCardiaca())
-                .presionSistolica(request.presionSistolica())
-                .presionDiastolica(request.presionDiastolica())
-                .spo2(request.spo2())
-                .temperatura(request.temperatura())
-                .dolor(request.dolor())
-                .gcs(request.gcs())
-                .quejaPrincipal(request.quejaPrincipal())
-                .estado(EstadoPaciente.REGISTRADO)
-                .escalado(false)
-                .fechaRegistro(ahora)
-                .fechaUltimoCambioEstado(ahora)
-                .build();
+        paciente.setEstado(EstadoPaciente.REGISTRADO);
+        paciente.setEscalado(false);
+        paciente.setFechaRegistro(ahora);
+        paciente.setFechaUltimoCambioEstado(ahora);
 
         NivelTriage nivel = paciente.clasificar();
         Integer slaMinutos = slaTriagePort.obtenerSla(nivel);

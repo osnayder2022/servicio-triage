@@ -1,5 +1,7 @@
-package com.vidacruz.triage.infraestructura.adaptador.in.web.exception;
+package com.vidacruz.triage.infraestructura.adaptador.in.web.exceptionhandler;
 
+import com.vidacruz.triage.dominio.exception.PacienteNoEncontradoException;
+import com.vidacruz.triage.dominio.exception.TransicionEstadoInvalidaException;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

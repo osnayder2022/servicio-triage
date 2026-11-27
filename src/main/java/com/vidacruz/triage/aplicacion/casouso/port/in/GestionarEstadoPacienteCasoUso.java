@@ -1,6 +1,6 @@
 package com.vidacruz.triage.aplicacion.casouso.port.in;
 
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.PacienteDetalleResponse;
+import com.vidacruz.triage.dominio.entidades.PacienteDetalleResponse;
 import com.vidacruz.triage.dominio.entidades.EstadoPaciente;
 import reactor.core.publisher.Mono;
 

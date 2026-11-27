@@ -1,10 +1,10 @@
 package com.vidacruz.triage.aplicacion.service;
 
-import com.vidacruz.triage.infraestructura.adaptador.in.web.exception.TransicionEstadoInvalidaException;
-import com.vidacruz.triage.infraestructura.adaptador.in.web.exception.PacienteNoEncontradoException;
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.PacienteDetalleResponse;
 import com.vidacruz.triage.aplicacion.casouso.port.in.GestionarEstadoPacienteCasoUso;
+import com.vidacruz.triage.dominio.exception.TransicionEstadoInvalidaException;
+import com.vidacruz.triage.dominio.exception.PacienteNoEncontradoException;
 import com.vidacruz.triage.dominio.port.out.AuditoriaTriageRepositorioPort;
+import com.vidacruz.triage.dominio.entidades.PacienteDetalleResponse;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import com.vidacruz.triage.dominio.port.out.PacienteRepositorioPort;
 import com.vidacruz.triage.dominio.port.out.GestorMensajePort;

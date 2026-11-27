@@ -1,6 +1,6 @@
 package com.vidacruz.triage.infraestructura.config;
 
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.PacienteDetalleResponse;
+import com.vidacruz.triage.dominio.entidades.PacienteDetalleResponse;
 import org.springframework.context.annotation.Configuration;
 import com.vidacruz.triage.dominio.entidades.Paciente;
 import org.modelmapper.convention.MatchingStrategies;

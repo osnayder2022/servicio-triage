@@ -1,4 +1,4 @@
-package com.vidacruz.triage.infraestructura.adaptador.in.web.dto;
+package com.vidacruz.triage.dominio.entidades;
 
 import java.math.BigDecimal;
 import java.time.Instant;

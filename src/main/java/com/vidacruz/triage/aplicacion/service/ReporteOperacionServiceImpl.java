@@ -2,7 +2,7 @@ package com.vidacruz.triage.aplicacion.service;
 
 import com.vidacruz.triage.aplicacion.casouso.port.in.ConsultarReporteOperacionCasoUso;
 import com.vidacruz.triage.dominio.port.out.ReporteOperacionPort;
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.ReporteOperacionHoraResponse;
+import com.vidacruz.triage.dominio.entidades.ReporteOperacionHoraResponse;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;

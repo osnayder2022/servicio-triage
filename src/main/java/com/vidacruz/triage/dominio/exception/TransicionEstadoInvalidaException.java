@@ -1,4 +1,4 @@
-package com.vidacruz.triage.infraestructura.adaptador.in.web.exception;
+package com.vidacruz.triage.dominio.exception;
 
 public class TransicionEstadoInvalidaException extends RuntimeException {
     public TransicionEstadoInvalidaException(String mensaje) {

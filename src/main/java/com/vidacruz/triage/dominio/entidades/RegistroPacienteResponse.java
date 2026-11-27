@@ -1,7 +1,4 @@
-package com.vidacruz.triage.infraestructura.adaptador.in.web.dto;
-
-import com.vidacruz.triage.dominio.entidades.EstadoPaciente;
-import com.vidacruz.triage.dominio.entidades.NivelTriage;
+package com.vidacruz.triage.dominio.entidades;
 
 import java.time.Instant;
 

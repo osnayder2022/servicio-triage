@@ -1,7 +1,7 @@
 package com.vidacruz.triage.infraestructura.adaptador.in.web.controlador;
 
 import com.vidacruz.triage.aplicacion.casouso.port.in.ConsultarReporteOperacionCasoUso;
-import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.ReporteOperacionHoraResponse;
+import com.vidacruz.triage.dominio.entidades.ReporteOperacionHoraResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
