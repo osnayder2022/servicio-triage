@@ -19,18 +19,10 @@ public class GestorMensajeAdaptadorPersistencia implements GestorMensajePort {
     private final ReactiveKafkaProducerTemplate<String, TriageEvent> kafkaTemplate;
 
     @Override
-    public Mono<Void> publicarEvento(String tipoEvento, Paciente paciente, Instant fechaEvento) {
-        TriageEvent evento = new TriageEvent(
-                tipoEvento,
-                paciente.getId(),
-                paciente.getNivelTriage(),
-                paciente.getEstado(),
-                paciente.getSlaMinutos(),
-                fechaEvento
-        );
+    public Mono<Void> publicarEvento(TriageEvent evento) {
 
-        return kafkaTemplate.send(TOPIC_TRIAJE_EVENTOS, String.valueOf(paciente.getId()), evento)
-                .doOnSuccess(res -> log.info("Evento '{}' publicado para paciente {}", tipoEvento, paciente.getId()))
+        return kafkaTemplate.send(TOPIC_TRIAJE_EVENTOS, String.valueOf(evento.pacienteId()), evento)
+                .doOnSuccess(res -> log.info("Evento '{}' publicado para paciente {}", evento.tipoEvento(), evento.pacienteId()))
                 .then();
     }
 }
