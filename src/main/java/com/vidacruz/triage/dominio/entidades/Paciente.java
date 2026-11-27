@@ -10,12 +10,13 @@ public class Paciente {
     private static final BigDecimal TEMP_URGENTE = new BigDecimal("38.5");
     private static final BigDecimal TEMP_URGENTE_2 = new BigDecimal("38.0");
 
-    // Inyectar desde propiedades o Datos de Referencia del documento
+
     private final Set<String> quejasAdministrativas = Set.of(
-            "renovacion de formula",
-            "certificado medico",
-            "incapacidad",
-            "orden de laboratorio"
+            "documentos",
+            "recolección de resultados",
+            "renovación de recetario",
+            "vacunación",
+            "seguimiento"
     );
 
     private Long id;
