@@ -8,4 +8,5 @@ public interface PacienteRepositorioPort {
     Mono<Paciente> guardar(Paciente paciente);
     Flux<Paciente> buscarPacientesConSlaVencido();
     Mono<Integer> marcarComoEscaladoSiAplica(Long pacienteId);
+    Mono<Paciente> buscarPorId(Long pacienteId);
 }
