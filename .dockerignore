@@ -1,0 +1,7 @@
+.git
+.idea
+target
+contenerizacion
+*.iml
+README.md
+HELP.md
