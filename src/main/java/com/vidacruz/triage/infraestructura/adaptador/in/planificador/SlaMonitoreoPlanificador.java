@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
@@ -46,16 +47,37 @@ public class SlaMonitoreoPlanificador {
     }
 
     private Mono<Void> evaluarPacientesConSlaVencido() {
+        Instant inicio = Instant.now();
+        AtomicInteger candidatos = new AtomicInteger();
+        AtomicInteger escalados = new AtomicInteger();
+
         return pacienteRepositorioPort.buscarPacientesConSlaVencido()
-                .flatMap(this::procesarEscalamientoIdempotente)
-                .then();
+                .doOnSubscribe(suscripcion -> log.debug("Iniciando búsqueda de pacientes con SLA vencido"))
+                .doOnNext(paciente -> {
+                    candidatos.incrementAndGet();
+                    log.debug("Paciente {} candidato a escalamiento: nivel={}, SLA={} min",
+                            paciente.getId(), paciente.getNivelTriage(), paciente.getSlaMinutos());
+                })
+                .flatMap(paciente -> procesarEscalamientoIdempotente(paciente)
+                        .doOnNext(escalado -> {
+                            if (escalado) {
+                                escalados.incrementAndGet();
+                            }
+                        }))
+                .then()
+                .doOnSuccess(ignorado -> log.info(
+                        "Ciclo SLA completado: candidatos={}, escalados={}, duración={} ms",
+                        candidatos.get(), escalados.get(), Duration.between(inicio, Instant.now()).toMillis()));
     }
 
-    private Mono<Void> procesarEscalamientoIdempotente(Paciente paciente) {
+    private Mono<Boolean> procesarEscalamientoIdempotente(Paciente paciente) {
         Instant ahora = Instant.now();
 
         // 1. Operación atómica en BD (RN-03 y RN-04)
         Mono<Boolean> escalarYAuditar = pacienteRepositorioPort.marcarComoEscaladoSiAplica(paciente.getId())
+                .doOnNext(filasActualizadas -> log.debug(
+                        "Resultado de actualización idempotente para paciente {}: {} fila(s)",
+                        paciente.getId(), filasActualizadas))
                 .filter(filasActualizadas -> filasActualizadas == 1)
                 .flatMap(filas -> {
                     AuditoriaTriage auditoria = AuditoriaTriage.builder()
@@ -66,18 +88,28 @@ public class SlaMonitoreoPlanificador {
                             .detalle("SLA de " + paciente.getSlaMinutos() + " min superado")
                             .fechaEvento(ahora)
                             .build();
-                    return auditoriaTriageRepositorioPort.guardar(auditoria).thenReturn(true);
+                    return auditoriaTriageRepositorioPort.guardar(auditoria)
+                            .doOnSuccess(guardada -> log.info(
+                                    "Escalamiento persistido para paciente {} y auditoría {} creada",
+                                    paciente.getId(), guardada.getId()))
+                            .thenReturn(true);
                 })
                 .defaultIfEmpty(false)
                 .as(transactionalOperator::transactional);
 
         // 2. Solo si la BD confirmó el escalamiento en este intento, publicar en Kafka
         return escalarYAuditar
-                .filter(Boolean::booleanValue)
-                .flatMap(escalado -> publicarEventoEscalado(paciente, ahora))
+                .flatMap(escalado -> {
+                    if (!escalado) {
+                        log.debug("Escalamiento omitido para paciente {}: ya fue procesado o cambió de estado",
+                                paciente.getId());
+                        return Mono.just(false);
+                    }
+                    return publicarEventoEscalado(paciente, ahora).thenReturn(true);
+                })
                 .onErrorResume(ex -> {
-                    log.error("Fallo al escalar paciente {}: {}", paciente.getId(), ex.getMessage(), ex);
-                    return Mono.empty();
+                    log.error("Fallo durante el escalamiento del paciente {}: {}", paciente.getId(), ex.getMessage(), ex);
+                    return Mono.just(false);
                 });
     }
 
@@ -91,7 +123,10 @@ public class SlaMonitoreoPlanificador {
                 fechaEvento
         );
 
-        return gestorMensajePort.publicarEvento(evento).then();
+        return gestorMensajePort.publicarEvento(evento)
+                .doOnSuccess(ignorado -> log.info("Evento '{}' publicado para paciente {}",
+                        EVENTO_ESCALADO, paciente.getId()))
+                .then();
     }
 
     @PreDestroy
