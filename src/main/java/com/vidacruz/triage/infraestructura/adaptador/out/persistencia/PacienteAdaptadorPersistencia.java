@@ -35,4 +35,9 @@ public class PacienteAdaptadorPersistencia implements PacienteRepositorioPort {
     public Mono<Integer> marcarComoEscaladoSiAplica(Long pacienteId) {
         return pacienteRepositorio.marcarComoEscaladoSiAplica(pacienteId);
     }
+
+    @Override
+    public Mono<Paciente> buscarPorId(Long pacienteId) {
+        return pacienteRepositorio.findById(pacienteId).map(entidad -> mapper.map(entidad,Paciente.class));
+    }
 }
