@@ -1,4 +1,4 @@
-package com.vidacruz.triage.aplicacion.casouso.service;
+package com.vidacruz.triage.aplicacion.service;
 
 import com.vidacruz.triage.infraestructura.adaptador.in.web.exception.TransicionEstadoInvalidaException;
 import com.vidacruz.triage.infraestructura.adaptador.in.web.exception.PacienteNoEncontradoException;
@@ -47,6 +47,7 @@ public class GestionarEstadoPacienteServiceImpl implements GestionarEstadoPacien
                         ));
                     }
 
+                    EstadoPaciente estadoAnterior = paciente.getEstado();
                     paciente.setEstado(nuevoEstado);
                     paciente.setFechaUltimoCambioEstado(ahora);
 
@@ -59,7 +60,7 @@ public class GestionarEstadoPacienteServiceImpl implements GestionarEstadoPacien
                                 AuditoriaTriage auditoria = AuditoriaTriage.builder()
                                         .pacienteId(actualizado.getId())
                                         .tipoEvento(tipoAuditoria.name())
-                                        .estadoAnterior(paciente.getEstado())
+                                        .estadoAnterior(estadoAnterior)
                                         .estadoNuevo(nuevoEstado)
                                         .detalle("Cambio de estado clínico")
                                         .fechaEvento(ahora)

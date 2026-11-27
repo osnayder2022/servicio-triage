@@ -1,4 +1,4 @@
-package com.vidacruz.triage.aplicacion.casouso.service;
+package com.vidacruz.triage.aplicacion.service;
 
 import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.RegistroPacienteResponse;
 import com.vidacruz.triage.infraestructura.adaptador.in.web.dto.RegistroPacienteRequest;
