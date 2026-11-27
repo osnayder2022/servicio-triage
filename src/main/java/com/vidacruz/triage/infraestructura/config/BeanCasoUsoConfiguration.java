@@ -12,9 +12,17 @@ import org.springframework.context.annotation.Configuration;
 import com.vidacruz.triage.dominio.port.out.SlaTriagePort;
 import org.springframework.context.annotation.Bean;
 import org.modelmapper.ModelMapper;
+import com.vidacruz.triage.aplicacion.casouso.port.in.ConsultarReporteOperacionCasoUso;
+import com.vidacruz.triage.aplicacion.service.ReporteOperacionServiceImpl;
+import com.vidacruz.triage.dominio.port.out.ReporteOperacionPort;
 
 @Configuration
 public class BeanCasoUsoConfiguration {
+
+    @Bean
+    public ConsultarReporteOperacionCasoUso consultarReporteOperacionCasoUso(ReporteOperacionPort reporteOperacionPort) {
+        return new ReporteOperacionServiceImpl(reporteOperacionPort);
+    }
 
     @Bean
     public RegistrarPacienteCasoUso registrarPacienteCasoUso(
