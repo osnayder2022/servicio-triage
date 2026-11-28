@@ -8,6 +8,7 @@ import com.vidacruz.triage.dominio.entidades.RegistroPacienteResponse;
 import com.vidacruz.triage.dominio.entidades.PacienteDetalleResponse;
 import org.springframework.validation.annotation.Validated;
 import com.vidacruz.triage.dominio.entidades.Paciente;
+import com.vidacruz.triage.dominio.entidades.EstadoPaciente;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import jakarta.validation.Valid;
+import java.util.Set;
 
 @Slf4j
 @Validated
@@ -23,6 +25,12 @@ import jakarta.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/triage/pacientes")
 public class TriageControlador {
+    private static final Set<EstadoPaciente> ESTADOS_PERMITIDOS = Set.of(
+            EstadoPaciente.REGISTRADO,
+            EstadoPaciente.EN_CONSULTA,
+            EstadoPaciente.ALTA
+    );
+
     private final GestionarEstadoPacienteCasoUso gestionarEstadoPacienteCasoUso;
     private final RegistrarPacienteCasoUso registrarPacienteCasoUso;
     private final ModelMapper mapper;
@@ -43,6 +51,10 @@ public class TriageControlador {
     public Mono<PacienteDetalleResponse> cambiarEstado(
             @PathVariable @Positive Long id,
             @Valid @RequestBody CambioEstadoRequest request) {
+        if (request.estado() == null || !ESTADOS_PERMITIDOS.contains(request.estado())) {
+            return Mono.error(new IllegalArgumentException(
+                    "El estado debe ser REGISTRADO, EN_CONSULTA o ALTA"));
+        }
         return gestionarEstadoPacienteCasoUso.cambiarEstado(id, request.estado())
                 .doOnSubscribe(ignorado -> log.info("Solicitud de cambio de estado para paciente {} a {}", id, request.estado()))
                 .doOnSuccess(respuesta -> log.info("Estado del paciente {} actualizado a {}", id, respuesta.estado()))
