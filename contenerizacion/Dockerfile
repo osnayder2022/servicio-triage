@@ -18,5 +18,5 @@ COPY --from=build /workspace/target/*.jar app.jar
 RUN chown triage:triage app.jar
 
 USER triage
-EXPOSE 8080
+EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
