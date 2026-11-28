@@ -82,3 +82,7 @@ kubectl apply -f kubernetes/servicio-triage/
 ```
 
 El Ingress expone la API bajo el host `triage.local` y requiere un controlador de Ingress NGINX. PostgreSQL y Kafka se mantienen como servicios internos (`ClusterIP`), ya que un Ingress estándar solo enruta tráfico HTTP/HTTPS.
+
+## Decisiones de arquitectura
+
+La decisión sobre arquitectura reactiva, integración con Kafka y despliegue en Kubernetes se documenta en [ADR 0001](docs/adr/0001-arquitectura-reactiva-y-despliegue-kubernetes.md).
