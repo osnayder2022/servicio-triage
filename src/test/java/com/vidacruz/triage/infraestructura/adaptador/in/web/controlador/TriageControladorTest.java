@@ -5,6 +5,7 @@ import com.vidacruz.triage.aplicacion.casouso.port.in.RegistrarPacienteCasoUso;
 import com.vidacruz.triage.dominio.entidades.EstadoPaciente;
 import com.vidacruz.triage.dominio.entidades.NivelTriage;
 import com.vidacruz.triage.dominio.entidades.RegistroPacienteResponse;
+import com.vidacruz.triage.dominio.entidades.PacienteDetalleResponse;
 import com.vidacruz.triage.infraestructura.adaptador.in.web.exceptionhandler.GlobalExceptionHandler;
 import com.vidacruz.triage.infraestructura.config.MapperConfig;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,6 +29,8 @@ import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @WebFluxTest(TriageControlador.class)
 @Import({MapperConfig.class, GlobalExceptionHandler.class})
@@ -53,6 +57,63 @@ class TriageControladorTest {
                 .expectBody()
                 .jsonPath("$.id").isEqualTo(1)
                 .jsonPath("$.nivelClasificado").isEqualTo("NO_URGENTE");
+    }
+
+    @ParameterizedTest
+    @MethodSource("estadosPermitidos")
+    void cambiarEstado_debeAceptarLosEstadosPermitidos(EstadoPaciente nuevoEstado) {
+        given(gestionarEstadoPacienteCasoUso.cambiarEstado(eq(1L), eq(nuevoEstado)))
+                .willReturn(Mono.just(respuestaDetalle(nuevoEstado)));
+
+        webTestClient.patch().uri("/triage/pacientes/1/estado")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Map.of("estado", nuevoEstado.name()))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.estado").isEqualTo(nuevoEstado.name());
+    }
+
+    private static Stream<Arguments> estadosPermitidos() {
+        return Stream.of(
+                Arguments.of(EstadoPaciente.REGISTRADO),
+                Arguments.of(EstadoPaciente.EN_CONSULTA),
+                Arguments.of(EstadoPaciente.ALTA)
+        );
+    }
+
+    @Test
+    void cambiarEstado_debeRechazarUnEstadoNoReconocido() {
+        webTestClient.patch().uri("/triage/pacientes/1/estado")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Map.of("estado", "EN_OBSERVACION"))
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verifyNoInteractions(gestionarEstadoPacienteCasoUso);
+    }
+
+    @Test
+    void cambiarEstado_debeRechazarUnCuerpoSinEstado() {
+        webTestClient.patch().uri("/triage/pacientes/1/estado")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Map.of())
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verifyNoInteractions(gestionarEstadoPacienteCasoUso);
+    }
+
+    @Test
+    void cambiarEstado_debeRechazarUnIdNoPositivo() {
+        webTestClient.patch().uri("/triage/pacientes/0/estado")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Map.of("estado", EstadoPaciente.ALTA.name()))
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verifyNoInteractions(gestionarEstadoPacienteCasoUso);
     }
 
     @ParameterizedTest
@@ -112,5 +173,12 @@ class TriageControladorTest {
     private static RegistroPacienteResponse respuestaRegistro() {
         return new RegistroPacienteResponse(1L, NivelTriage.NO_URGENTE, 60,
                 EstadoPaciente.REGISTRADO, Instant.parse("2026-01-01T00:00:00Z"));
+    }
+
+    private static PacienteDetalleResponse respuestaDetalle(EstadoPaciente estado) {
+        Instant ahora = Instant.parse("2026-01-01T00:00:00Z");
+        return new PacienteDetalleResponse(1L, "Ana", 30, 70, 110, 70, 98,
+                new BigDecimal("36.5"), 2, 15, "Dolor", NivelTriage.NO_URGENTE,
+                60, estado, false, ahora, ahora, 0L);
     }
 }
