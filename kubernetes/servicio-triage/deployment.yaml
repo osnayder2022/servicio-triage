@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicio-triage
+  namespace: vidacruz-prod
+  labels:
+    app.kubernetes.io/name: servicio-triage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: servicio-triage
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: servicio-triage
+    spec:
+      containers:
+        - name: servicio-triage
+          image: ghcr.io/tu-organizacion/servicio-triage:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8081
+          env:
+            - name: SPRING_R2DBC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: servicio-triage-secret
+                  key: SPRING_R2DBC_URL
+            - name: SPRING_R2DBC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: SPRING_R2DBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: servicio-triage-secret
+                  key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1Gi

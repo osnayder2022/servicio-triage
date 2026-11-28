@@ -6,7 +6,7 @@ Microservicio reactivo para registrar y gestionar pacientes en un proceso de tri
 
 - Registra pacientes y calcula su nivel de triage y SLA.
 - Consulta el detalle de un paciente y actualiza su estado (`REGISTRADO`, `EN_CONSULTA` o `ALTA`).
-- Guarda una auditoría de los eventos y publica eventos de triage en Kafka. Los mensajes en formato JSON
+- Guarda una auditoría de los eventos y publica eventos de triage en Kafka en formato JSON.
 - Detecta y escala pacientes que superan el SLA configurado.
 - Genera reportes de operación por intervalo horario.
 
@@ -69,3 +69,16 @@ docker compose --env-file contenerizacion/.env -f contenerizacion/docker-compose
 ```
 
 Los datos se conservan en volúmenes de Docker. Para eliminarlos también, agregue la opción `--volumes`.
+
+## Despliegue en Kubernetes
+
+Los manifiestos se encuentran en `kubernetes/`, separados por componente. Antes de desplegar, reemplace `CAMBIAR_EN_PRODUCCION` y `REEMPLAZAR_POR_UUID_KAFKA_VALIDO` en los secretos. La imagen configurada para el servicio es `ghcr.io/tu-organizacion/servicio-triage:latest`; publíquela en un registro accesible por el clúster o cambie ese valor en `kubernetes/servicio-triage/deployment.yaml`.
+
+```bash
+kubectl apply -f kubernetes/namespace.yaml
+kubectl apply -f kubernetes/postgres/
+kubectl apply -f kubernetes/kafka/
+kubectl apply -f kubernetes/servicio-triage/
+```
+
+El Ingress expone la API bajo el host `triage.local` y requiere un controlador de Ingress NGINX. PostgreSQL y Kafka se mantienen como servicios internos (`ClusterIP`), ya que un Ingress estándar solo enruta tráfico HTTP/HTTPS.
